@@ -7,7 +7,7 @@ const db = new Datastore({ filename: path.join(__dirname, "data", "retroSummary.
 // 📌 Datos iniciales con estructura corregida y `_id`
 const initialData = {
   _id: "retroSummary_001", // ✅ Identificador único
-  loQueGusto: [
+  QueHicimosBien: [
     "El equipo siempre está dispuesto a ayudar.",
     "El aumento en la generación de documentación.",
     "Los servidores para pruebas cada vez son más estables.",
@@ -34,9 +34,17 @@ const initialData = {
     "Veníamos cerrando muy bien los objetivos. Es importante revisar cuidadosamente los actuales para evitar errores.",
     "El trabajo de Darío con la ventana de Tigo Cenam. ¡Felicitaciones!",
     "La realización constante de pruebas.",
-    "La generación de incentivos para documentar código y procesos."
+    "La generación de incentivos para documentar código y procesos.",
+    "El acompañamiento del equipo para las ventanas.",
+    "El buen trabajo en equipo.",
+    "El compromiso del grupo.",
+    "El alto nivel de profesionalismo.",
+    "El buen desempeño del equipo se refleja en su capacidad para responder con agilidad a los problemas que surgen de manera urgente.",
+    "Las pruebas al código, son desgastantes pero ahorran tiempo.",
+    "La confiabilidad del equipo.",
+    "La colaboración por parte del equipo."
   ],
-  loQueAprendio: [
+  OportunidadesDeMejora: [
     "La necesidad de aceptar que las prioridades cambian y no es algo personal.",
     "Es fundamental que cada sistema que utilizamos cuente con un archivo README claro, que incluya un paso a paso sobre cómo configurar un entorno y realizar las pruebas correspondientes.",
     "Esto debe aplicarse también al release notes, detallando los cambios realizados.",
@@ -45,29 +53,18 @@ const initialData = {
     "El aprendizaje y entendimiento de nuevos conceptos, ya que debo investigar y leer los temas que documento en Confluence o en documentos oficiales.",
     "Ambientes de Kea, hooks, extensions, Mandarin, deployment, Oracle DB y CiscoCIM.",
     "El funcionamiento de Puppet, CI y plugins de Gradle.",
-    "La importancia de repasar cada cierto tiempo las DoD (Definitions of Done) de las épicas de los objetivos para estar seguros de tener todos los temas contemplados."
-  ],
-  loQueFalto: [
-    "La documentación del simulador y los ambientes de desarrollo.",
-    "Más información en los tickets de Jira, como la descripción, los criterios de aceptación y pasos de reproducción.",
-    "La ausencia de organización en la reunión de demostración, lo que ocasionó una pérdida de tiempo no intencionada, impidiendo la presentación.",
-    "Durante el trimestre, es importante leer con más detalle las definiciones de hecho (DOD) de las épicas y los objetivos, para asegurarnos de no desviarnos.",
-    "Obtener una visión más clara para mejorar la participación del equipo de desarrollo en el proyecto POC de Telecentro.",
-    "Documentar las pruebas con simuladores.",
-    "Documentar las soluciones a problemas comunes y frecuentes.",
-    "Realizar revisión de código.",
-    "La estimación de la definición y del alcance de cada ticket.",
-    "CI y pruebas automatizadas.",
-    "Exponer todas las dudas que surjan durante las reuniones.",
-    "Definiciones tardías y cambios de alcance."
-  ],
-  mejorasPropuestas: [
+    "La importancia de repasar cada cierto tiempo las DoD (definitions of done) de las épicas de los objetivos para estar seguros de tener todos los temas contemplados.",
+    "Los ambientes de desarrollo más actualizados y automatizados.",
+    "La fijación de los objetivos con mayor anticipación, considerando que somos dos grupos pequeños para tantos objetivos.",
+    "Clarificar las tareas necesarias para alcanzar los objetivos.",
+    "Evitar agregar objetivos importantes a mitad del trimestre.",
+    "No llegar corriendo, con el último suspiro, al final del trimestre.",
     "Las fallas en la Intranet2 que no han permitido continuar con las pruebas automatizadas.",
     "Ramas genéricas sin referenciar tickets.",
     "Dejar los temas pendientes para revisar al final.",
     "Tickets sin descripción o sin comentarios al cerrarlos.",
     "Cambio de alcance sobre la marcha.",
-    "La planificación muchas veces es superada en importancia por las prioridades.",
+    "La planeación muchas veces es superada en importancia por las prioridades.",
     "Las definiciones de producto no son muy buenas.",
     "Como parte de mi rol como líder, debo salir de la parte técnica de vez en cuando para tener visibilidad de cada uno.",
     "Dedicar tiempo a objetivos que tienen definiciones poco claras y generan dudas.",
@@ -83,30 +80,36 @@ const initialData = {
     "Considerar que debido a una gran carga de trabajo puede verse afectada la calidad del desarrollo.",
     "Analizar y discutir las métricas de cada sprint al finalizar la reunión de planeación."
   ],
-  preguntas: [
-    "¿Cuáles son los objetivos en los que vamos a trabajar cada uno?",
-    "¿Existirá interacción con el equipo de tecnología?",
-    "¿Cómo gestionar de manera más eficiente la interacción con otros equipos cuando no hay tareas claramente definidas?",
-    "¿Qué creen que deberíamos cambiar o hacer de manera diferente para mejorar algo de lo que hacemos hoy en día y que no está generando los resultados que esperamos?"
-  ],
-  mantener: [
-    "El acompañamiento del equipo para las ventanas.",
-    "El buen trabajo en equipo.",
-    "El compromiso del grupo.",
-    "El alto nivel de profesionalismo.",
-    "El buen desempeño del equipo se refleja en su capacidad para responder con agilidad a los problemas que surgen de manera urgente.",
-    "Las pruebas al código, son desgastantes pero ahorran tiempo.",
-    "La confiabilidad del equipo.",
-    "La colaboración por parte del equipo."
+  QueHicimosMal: [
+    "La documentación del simulador y los ambientes de desarrollo.",
+    "Más información en los tickets de Jira, como la descripción, los criterios de aceptación y pasos de reproducción.",
+    "La ausencia de organización en la reunión de demostración, lo que ocasionó una pérdida de tiempo no intencionada, impidiendo la presentación.",
+    "Durante el trimestre, es importante leer con más detalle las definiciones de hecho (DOD) de las épicas y los objetivos, para asegurarnos de no desviarnos.",
+    "Obtener una visión más clara para mejorar la participación del equipo de desarrollo en el proyecto POC de Telecentro.",
+    "Documentar las pruebas con simuladores.",
+    "Documentar las soluciones a problemas comunes y frecuentes.",
+    "Realizar revisión de código.",
+    "Las estimaciones de la definición y del alcance de cada ticket.",
+    "CI y pruebas automatizadas.",
+    "Exponer todas las dudas que surjan durante las reuniones.",
+    "Definiciones tardías y cambios de alcance."
   ]
 };
 
-// 🔹 Insertar datos en la base de datos
-db.insert(initialData, (err, newDoc) => {
+// 🔹 Eliminar datos previos y luego insertar los nuevos datos
+db.remove({}, { multi: true }, (err, numRemoved) => {
   if (err) {
-    console.error("❌ Error al insertar datos:", err);
+    console.error("❌ Error al limpiar la base de datos:", err);
   } else {
-    console.log("✅ Datos iniciales insertados correctamente:", newDoc);
+    console.log(`🗑️ Se eliminaron ${numRemoved} registros antiguos.`);
+    db.insert(initialData, (err, newDoc) => {
+      if (err) {
+        console.error("❌ Error al insertar datos:", err);
+      } else {
+        console.log("✅ Datos iniciales insertados correctamente:", newDoc);
+      }
+    });
   }
 });
+
 
