@@ -1,6 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { getData, insertData, updateData, deleteData } = require("../database");
+const { getData, insertCsvData, updateData, deleteData } = require("../database");
+const fs = require("fs");
+const path = require("path");
+const multer = require("multer");
+
+const upload = multer({ dest: "uploads/" });
 
 // 🔹 Obtener todos los datos
 router.get("/", async (req, res) => {
@@ -8,57 +13,84 @@ router.get("/", async (req, res) => {
     const data = await getData();
     res.json(data);
   } catch (error) {
+    console.error("❌ Error al obtener datos:", error);
     res.status(500).json({ error: "Error al obtener datos" });
   }
 });
 
-// 🔹 Agregar un nuevo dato
-router.post("/", async (req, res) => {
+// 🔹 Subir y procesar un archivo CSV
+router.post("/upload-csv", upload.single("file"), async (req, res) => {
   try {
-    const newData = req.body;
-    const inserted = await insertData(newData);
-    res.json(inserted);
+    console.log("📂 Recibiendo archivo CSV...");
+
+    if (!req.file) {
+      console.error("❌ No se ha subido ningún archivo.");
+      return res.status(400).json({ error: "No se ha subido ningún archivo." });
+    }
+
+    const category = req.body.category;
+    const filePath = req.file.path;
+
+    console.log("🗂️ Archivo recibido:", req.file);
+    console.log("📂 Categoría recibida:", category);
+
+    const csvData = fs.readFileSync(filePath, "utf8")
+      .split("\n")
+      .map(row => row.trim())
+      .filter(row => row.length > 0);
+
+    if (csvData.length < 2) {
+      console.error("❌ El archivo CSV no tiene suficientes datos.");
+      return res.status(400).json({ error: "El archivo CSV no tiene suficientes datos." });
+    }
+
+    const parsedData = csvData.map(row => row.split(",").map(val => val.trim()));
+
+    console.log("📊 Datos parseados del CSV:", parsedData);
+
+    await insertCsvData(category, parsedData);
+    fs.unlinkSync(filePath);
+
+    console.log("✅ CSV cargado exitosamente.");
+    return res.json({ message: "CSV cargado exitosamente", category, data: parsedData });
+
   } catch (error) {
-    res.status(500).json({ error: "Error al insertar datos" });
+    console.error("❌ Error al procesar el CSV:", error);
+    res.status(500).json({ error: "Error al procesar el archivo CSV", details: error.message });
   }
 });
 
-// 🔹 Actualizar un dato por ID
-router.put("/:id", async (req, res) => {
+// 🔹 Actualizar una categoría específica
+router.put("/:category", async (req, res) => {
   try {
-    const { id } = req.params;
+    const category = req.params.category;
     const updatedData = req.body;
-    const updated = await updateData(id, updatedData);
-    res.json({ message: "Actualizado correctamente", updated });
+
+    console.log("🔄 Recibida solicitud PUT para categoría:", category, updatedData);
+    
+    const result = await updateData(category, updatedData);
+
+    if (!result) {
+      return res.status(404).json({ error: "No se encontró la categoría para actualizar" });
+    }
+
+    res.json({ message: "Actualizado correctamente", result });
   } catch (error) {
-    res.status(500).json({ error: "Error al actualizar datos" });
+    console.error("❌ Error en PUT /api/retro-data/:category:", error);
+    res.status(500).json({ error: "Error al actualizar los datos" });
   }
 });
 
-// 🔹 Eliminar un dato por ID
-router.delete("/:id", async (req, res) => {
+// 🔹 Eliminar una categoría específica
+router.delete("/:category", async (req, res) => {
   try {
-    const { id } = req.params;
-    await deleteData(id);
+    const category = req.params.category;
+    await deleteData(category);
     res.json({ message: "Eliminado correctamente" });
   } catch (error) {
-    res.status(500).json({ error: "Error al eliminar datos" });
+    console.error("❌ Error al eliminar categoría:", error);
+    res.status(500).json({ error: "Error al eliminar categoría" });
   }
 });
 
-// 🔹 Obtener todas las categorías disponibles
-router.get("/categories", async (req, res) => {
-    try {
-      const data = await getData();
-      if (data.length === 0) {
-        return res.json([]);
-      }
-      const categories = Object.keys(data[0]).filter((key) => key !== "_id");
-      res.json(categories);
-    } catch (error) {
-      res.status(500).json({ error: "Error al obtener categorías" });
-    }
-  });
-
-  
 module.exports = router;
